@@ -1,0 +1,37 @@
+Go to Game File
+Make a Field of type int called gamePhase
+Make a Field of type bool called greenLight
+Add an onCodeUpdate to Game
+Set gamePhase to 0 in onCodeUpdate
+Set greenLight to false in onCodeUpdate
+Broadcast title "Starting Soon!", "Run on green, stop on red!"
+(Optional: Add in concatenation to make green and red colored; looks like "( "Run on " + ( ( ChatColor.GREEN + "GREEN" ) + ChatColor.WHITE ) ) + ( ", stop on " + ( ChatColor.RED + "RED" ) ))")?
+Set showCountdownTimer to true
+Start timer (30 seconds)
+Add method onTimerExpire to Game
+if gamePhase == 0, broadcast "Get ready...", set gamePhase = 1, set showCountdownTimer to false, and start timer for Random.generateInteger(3, 7)
+else if gamePhase == 1
+	if greenLight, broadcast "Red light!" and set timeout for 1 second, in which set greenLight to false, after the timeout startTimer for Random.generateInteger(5, 15)
+	else, broadcast "Green light!", set greenLight to true, and startTimer for Random.generateInteger(5, 15)
+Go to Player File
+Add onJoin
+if GetGame().gamePhase == 0, teleport(Random.generateInteger(-44, -75), 30, 126), setGameMode(GameMode.ADVENTURE), and set canMove = false
+Go back to the Game File
+After "else if gamePhase == 1", add a for Player p in getPlayerList(): p.canMove = true
+Go back to the Player File
+After the end of "if getGame().gamePhase == 0", add else setGameMode(GameMode.SPECTATOR)
+Add Method onMove
+if getLocation().getZ() >= 472, sendTitle "CONGRATULATIONS!", "You have completed the course!", getGame().broadcastMessage(name + " completed the course!"), and getGame().checkRestart()
+if (NOT getGame().greenLight) AND (getGame().gamePhase == 1),
+	setGameMode(GameMode.SPECTATOR)
+	sendTitle "You failed!", "No moving during Red Light!" and getGame().broadcastMessage(name + " moved during red light and has failed!")
+Go to the Game File
+Add Method checkRestart()
+for Player p in getPlayerList(), 
+	if p.getGameMode() == GameMode.ADVENTURE, return
+Broadcast message "All players are in spectator! Restarting..."
+resetGame()
+Go back to Player File
+After the end of the else (following if getLocation().getZ() etc), add getGame().checkRestart()
+Go back to Game File
+After greenLight = false in onCodeUpdate, add for Player p in getPlayerList(), p.setGameMode(GameMode.ADVENTURE) and p.onJoin()
